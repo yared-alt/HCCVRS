@@ -1,0 +1,258 @@
+<html>
+<head>
+<title>Log in page</title>
+<script language="javascript">
+function validatefun(field,alerttxt)
+{
+with (field)
+{
+if (value==null||value=="")
+{
+alert(alerttxt);
+return false;
+}
+else 
+{
+return true
+}
+}
+}
+
+function checklength(field,alerttxt)
+{
+with(field)
+{
+if(value.length<3)
+{
+alert(alerttxt);
+return false;
+}
+}
+}
+function number(field,alerttxt)
+{
+with(field)
+{
+for (var i = 0; i < field.value.length; ++i)
+{
+if(!(isNaN(field.value.charAt(i))))
+{
+alert(alerttxt);
+return false;
+}
+}
+
+}
+}
+function validateemail(field,alerttxt)
+{
+with (field)
+{
+var apos=value.indexOf("@");
+var dotpos=value.lastIndexOf(".");
+if (apos<1||dotpos-apos<2)
+{
+alert(alerttxt);
+return false;
+}
+else {return true;}
+}
+}
+function validate_acount(thisform)
+{
+with (thisform)
+{
+if (validateemail(email,"Not a valid e-mail address!")==false)
+{
+email.focus();
+return false;}
+}
+}
+
+function validate_acount(thisform)
+{
+with(thisform)
+{
+if(validatefun(username,"Please Enter user Name!")==false)
+{
+username.focus();
+return false;
+}
+if(checklength(username,"User Name Must be contain Three character!")==false)
+{
+username.value="";
+username.focus();
+return false;
+}
+if(number(username,"Name can not contain space or number!")==false)
+{
+username.value="";
+username.focus();
+return false;
+}
+}
+with (thisform)
+{
+if (validatefun(email,"Please enter your email!")==false)
+{
+email.focus();
+return false;
+}
+if(validateemail(email,"Please enter correct e-mail address")==false)
+{
+email.focus();
+return false;
+}
+}
+
+
+with (thisform)
+{
+if (validatefun(password,"Password can not be empty!")==false)
+{
+password.focus();
+return false;
+}
+if(checklength(password,"Password must be contain Three character!")==false)
+{
+password.value="";
+password.focus();
+return false;
+}
+}
+
+with(thisform)
+{
+if(validatefun(firstname,"Please enter your first name!")==false)
+{
+firstname.focus();
+return false;
+}
+if(number(firstname,"Name can not contain space or number!")==false)
+{
+firstname.value="";
+firstname.focus();
+return false;
+}
+}
+with(thisform)
+{
+if(validatefun(lastname,"Please enter your last name!")==false)
+{
+lastname.focus();
+return false;
+}
+if(number(lastname,"Name can not contain space or number!")==false)
+{
+lastname.value="";
+lastname.focus();
+return false;
+}
+}
+with(thisform)
+{
+if(validatefun(college,"Please enter your College!")==false)
+{
+college.focus();
+return false;
+}
+}
+with(thisform)
+{
+if(validatefun(dept,"Please enter your Department!")==false)
+{
+dept.focus();
+return false;
+}
+}
+with(thisform)
+{
+if(validatefun(city,"Please enter your city!")==false)
+{
+city.focus();
+return false;
+}
+}
+with(thisform)
+{
+if(validatefun(sex,"Please enter your sex!")==false)
+{
+sex.focus();
+return false;
+}
+}
+
+
+}
+</script>
+
+</head>
+<body>
+
+<table border="0" align="center">
+<br><br><br>
+<tr><td>
+<center>
+</center><br>
+<h2> Standard User acount registration Form</h2>
+<form action="insertuseracount1.php" onsubmit="return validate_acount(this)" method="POST">
+<center>
+<table align="center">
+<tr>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td rowspan="10">&nbsp;</td>
+<td align="right">
+<label for="id_firstname">User Name:</td><td> 
+<input maxlength="100" size="30" name="username" type="text" id="id_username" /></label></td>
+</tr>
+<tr><td align="right"><label for="id_firstname">password:</td><td> 
+<input maxlength="32" size="30" name="password" type="password" id="id_password" /></td></tr>
+<tr><td align="right"><label for="id_email">Email address:</td><td> </label>
+<input maxlength="100" size="30" name="email" type="text" id="id_email" /></td></tr>
+
+<tr><td align="right"><label for="id_firstname">First name:</td><td> </label>
+<input maxlength="100" size="30" name="firstname" type="text" id="id_firstname" /></td></tr>
+<tr><td align="right"><label for="id_lastname">Last Name:</td><td> </label>
+<input maxlength="100" size="30" name="lastname" type="text" id="id_lastname" /></td></tr>
+<tr><td align="right"><label for="id_lastname">College</td><td> </label>
+<input maxlength="100" size="30" name="college" type="text" id="id_lastname" /></td></tr>
+<tr><td align="right"><label for="id_lastname">Department</td><td> </label>
+<input maxlength="100" size="30" name="dept" type="text" id="id_lastname" /></td></tr>
+<tr><td align="right"><label for="id_city">City/town</td><td>
+<input maxlength="500" size="30" name="city" type="text" id="id_city" /></td></tr>
+<tr><td align="right"><label for="id_city">Age</td><td>
+<input maxlength="500" size="30" name="city" type="number" id="id_city" /></td></tr>
+	<br>
+	<tr><td align="right">Sex:</td><td><select name="sex" id="id_sex">
+<option value="" selected="selected">select Sex</option>
+<option value="ma">male</option>
+<option value="fe">Female</option>
+</select></td></tr>
+
+	</table>
+	</center>
+	<center>
+<input type="submit" name="submit" value="submit">
+</center>
+</form> 
+</td></tr><table>
+</body>
+ </html> 

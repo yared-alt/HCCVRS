@@ -1,0 +1,5 @@
+body  {
+    background: #bbb url(../images/bg1.png);
+    margin: 0;          /* shorthand for all margins = 0 */
+    padding: 0;         /* no padding */
+}
