@@ -36,70 +36,64 @@ include('usernavbar.php');
 <!-- /.container-fluid -->
 <div class="row">
 <form  method="post" enctype="multipart/form-data" name="death_reg">  
-    <?php 
-    if (isset($_POST['submit'])) {
-
-     $con=mysql_connect('localhost','root','');
-    mysql_select_db("cvrs_db",$con);
-    $resident_id=$_POST['resid']; 
-    //echo $resident_id;
-  $Death_place=$_POST['deathplace'];
-   $Death_date=$_POST['dd'];
-  $Informant_FullName=$_POST['informantname'];
-  $Summray_Death=$_POST['deathsum'];
-
-  $sql3=mysql_query("select * from residentregistration where resident_id='$resident_id'");
-  $sql4=mysql_num_rows($sql3);
-  if ($sql4>0){
-$row=mysql_fetch_assoc($sql3);
-$rid=$row['resident_id'];
-$fname=$row['fname'];
-$mname=$row['mname'];
-$lname=$row['lname'];
-$house_no=$row['house_no'];
-$sex=$row['sex'];
-$age=$row['age'];
-
-    $sql2=mysql_query("INSERT INTO `deathregistration`
-                      (resident_id,f_name,m_name,l_name,Sex,place_of_death,date_of_death,
-                      summery_of_death,
-                      informant_name,age) 
-              VALUES ('$resident_id',
-                '$fname','$mname','$lname','$sex','$Death_place','$Death_date',
-                 '$Summray_Death',
-                '$Informant_FullName','$age')");
-    if($sql2>0){
-
- $sql=mysql_query(" UPDATE residentregistration SET status='died' where resident_id='$resident_id'");
-
-if($sql){
-echo "<div class='alert alert-success' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Death Registered Successfully</b></div>";
-}else{
-  
-}
-    
-
-    }else {
-     
-    }
-
-  }else {
-     echo "<div class='alert alert-danger' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Death Registration Faild! <br />&nbsp;Please Enter Valid Resident ID </b></div>";
-    }
-  
-  
-    
-    ?>
-    
 <?php 
-    ?>
-    <?php echo mysql_error();?>
+if (isset($_POST['submit'])) {
+    // Database connection using mysqli (mysql is deprecated)
+    $con = mysqli_connect('localhost', 'root', '', 'cvrs_db');
+    if (!$con) {
+        die("<div class='alert alert-danger' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Database connection failed: " . mysqli_connect_error() . "</b></div>");
+    }
+
+    // Sanitize input data
+    $resident_id = mysqli_real_escape_string($con, $_POST['resid']);
+    $Death_place = mysqli_real_escape_string($con, $_POST['deathplace']);
+    $Death_date = mysqli_real_escape_string($con, $_POST['dd']);
+    $Informant_FullName = mysqli_real_escape_string($con, $_POST['informantname']);
+    $Summray_Death = mysqli_real_escape_string($con, $_POST['deathsum']);
+
+    // Check if resident exists
+    $sql3 = mysqli_query($con, "SELECT * FROM residentregistration WHERE resident_id='$resident_id'");
+    if (!$sql3) {
+        die("<div class='alert alert-danger' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Database error: " . mysqli_error($con) . "</b></div>");
+    }
+
+    if (mysqli_num_rows($sql3) > 0) {
+        $row = mysqli_fetch_assoc($sql3);
+        $rid = $row['resident_id'];
+        $fname = $row['fname'];
+        $mname = $row['mname'];
+        $lname = $row['lname'];
+        $house_no = $row['house_no'];
+        $sex = $row['sex'];
+        $age = $row['age'];
+
+        // Insert death record
+        $sql2 = mysqli_query($con, "INSERT INTO `deathregistration`
+            (resident_id, f_name, m_name, l_name, Sex, place_of_death, date_of_death,
+            summery_of_death, informant_name, age) 
+            VALUES 
+            ('$resident_id', '$fname', '$mname', '$lname', '$sex', '$Death_place', 
+            '$Death_date', '$Summray_Death', '$Informant_FullName', '$age')");
+
+        if ($sql2) {
+            // Update resident status
+            $sql = mysqli_query($con, "UPDATE residentregistration SET status='died' WHERE resident_id='$resident_id'");
+            
+            if ($sql) {
+                echo "<div class='alert alert-success' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Death Registered Successfully</b></div>";
+            } else {
+                echo "<div class='alert alert-warning' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Death registered but status update failed: " . mysqli_error($con) . "</b></div>";
+            }
+        } else {
+            echo "<div class='alert alert-danger' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Death Registration Failed: " . mysqli_error($con) . "</b></div>";
+        }
+    } else {
+        echo "<div class='alert alert-danger' style='width:940px;'><b>&nbsp;&nbsp;&nbsp;Death Registration Failed! <br />&nbsp;Please Enter Valid Resident ID</b></div>";
+    }
     
-
-<?php
-
+    // Close connection
+    mysqli_close($con);
 }
- 
 ?>
 <div class="col-lg-6">
                            <div class="well">
