@@ -28,78 +28,104 @@ include 'userhead.php';
          <div class="row">
                     <div class="col-lg-6">
 <form class="form-horizontal" name="reg_m" method="post" enctype="multipart/form-data" >
-       <?php 
-    if (isset($_POST['submit'])) {
-     $con=mysql_connect('localhost','root','');
-    mysql_select_db("cvrs_db",$con);
-$sql="select * from marriageregistration";
-$result=mysql_query($sql);
-while ($row=mysql_fetch_assoc($result)) {
-$res=$row['marriage_id'];
-}
-$ch=substr($res,0,2);
-$num=substr($res,2,5);
-$num=$num+1;
-$year = substr(date('y'),-2);
-$marriage_id=$ch.$num.'/'.$year;
-  $fres=$_POST['fres'];
-  $mres=$_POST['mres']; 
-  $hfname=$_POST['hfname'];
-  $hmname=$_POST['hmname'];
-  $hlname=$_POST['hlname']; 
- $mdate=$_POST['mdate'];
-  $hbirth=$_POST['hbirth'];
-  $hbplace=$_POST['hbplace'];
-    $hphoto=$_FILES['hphoto']['name'];
-    $wphoto=$_FILES['wphoto']['name'];
-   
-     $wfname=$_POST['wfname'];
-  $wmname=$_POST['wmname'];
-  $wlname=$_POST['wlname']; 
-  $wbirth=$_POST['wbirth'];
-  $wbplace=$_POST['wbplace'];
-    
-  
-$sql3=mysql_query("select * from residentregistration where resident_id ='$mres' AND sex='male'");
-   $sql5=mysql_query("select * from residentregistration where resident_id ='$fres' AND sex='female'");
-
-
- $sql4=mysql_num_rows($sql3);
- $sql6=mysql_num_rows($sql5);
-$th = 'uploads/'.basename( $_FILES['hphoto']['name']);  
- $tw = 'uploads/'.basename( $_FILES['wphoto']['name']);  
-
-if($sql4 >0 && $sql6>0)
-{
-  if((move_uploaded_file($_FILES['hphoto']['tmp_name'], $th)) &&(move_uploaded_file($_FILES['wphoto']['tmp_name'], $tw))) { 
-
-                $sql2=mysql_query("INSERT INTO `marriageregistration`
-                      (marriage_id,maleresident_id,femaleresident_id,w_fname,w_mname,w_lname,w_birth,w_bplace,
-                        w_photo,h_fname,h_mname,h_lname,h_birth,h_bplace,h_photo,marriage_date
-                      ) 
-              VALUES ('$marriage_id','$mres','$fres',
-                      '$wfname','$wmname','$wlname','$wbirth','$wbplace','$wphoto','$hfname','$hmname','$hlname','$hbirth',
-                      '$hbplace','$hphoto','$mdate')"); 
-              }
-
-if ($sql2>0) {
-
-    ?>
-    <div class="alert alert-success" style="width:400px;"><b>&nbsp;&nbsp;Marriage Registered Successfully</b></div>
 <?php 
-}else{
-  echo mysql_error();
-    ?>
-    <div class="alert alert-danger"style="width:400px;" ><b>&nbsp;&nbsp;Marriage Registration Failed!</b></div>
-<?php
-}
-
+if (isset($_POST['submit'])) {
+    // Database connection - using mysqli instead of deprecated mysql
+    $con = mysqli_connect('localhost','root','','cvrs_db');
+    if (!$con) {
+        die("Connection failed: " . mysqli_connect_error());
     }
 
+    // Get the latest marriage_id
+    $sql = "SELECT * FROM marriageregistration ORDER BY marriage_id DESC LIMIT 1";
+    $result = mysqli_query($con, $sql);
+    
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $res = $row['marriage_id'];
+        $ch = substr($res, 0, 2);
+        $num = substr($res, 2, 5);
+        $num = $num + 1;
+    } else {
+        // Default values if no records exist
+        $ch = "MR";
+        $num = "00001";
+    }
+    
+    $year = substr(date('y'), -2);
+    $marriage_id = $ch . $num . '/' . $year;
 
-?> 
-  <?php }?>  
+    // Sanitize input data
+    $fres = mysqli_real_escape_string($con, $_POST['fres']);
+    $mres = mysqli_real_escape_string($con, $_POST['mres']); 
+    $hfname = mysqli_real_escape_string($con, $_POST['hfname']);
+    $hmname = mysqli_real_escape_string($con, $_POST['hmname']);
+    $hlname = mysqli_real_escape_string($con, $_POST['hlname']); 
+    $mdate = mysqli_real_escape_string($con, $_POST['mdate']);
+    $hbirth = mysqli_real_escape_string($con, $_POST['hbirth']);
+    $hbplace = mysqli_real_escape_string($con, $_POST['hbplace']);
+    $hphoto = mysqli_real_escape_string($con, $_FILES['hphoto']['name']);
+    $wphoto = mysqli_real_escape_string($con, $_FILES['wphoto']['name']);
+    $wfname = mysqli_real_escape_string($con, $_POST['wfname']);
+    $wmname = mysqli_real_escape_string($con, $_POST['wmname']);
+    $wlname = mysqli_real_escape_string($con, $_POST['wlname']); 
+    $wbirth = mysqli_real_escape_string($con, $_POST['wbirth']);
+    $wbplace = mysqli_real_escape_string($con, $_POST['wbplace']);
 
+    // Check if residents exist and have correct gender
+    $sql3 = mysqli_query($con, "SELECT * FROM residentregistration WHERE resident_id ='$mres' AND sex='male'");
+    $sql5 = mysqli_query($con, "SELECT * FROM residentregistration WHERE resident_id ='$fres' AND sex='female'");
+
+    $sql4 = mysqli_num_rows($sql3);
+    $sql6 = mysqli_num_rows($sql5);
+    
+    $th = 'uploads/' . basename($_FILES['hphoto']['name']);  
+    $tw = 'uploads/' . basename($_FILES['wphoto']['name']);  
+
+    if ($sql4 > 0 && $sql6 > 0) {
+        if ((move_uploaded_file($_FILES['hphoto']['tmp_name'], $th)) && 
+            (move_uploaded_file($_FILES['wphoto']['tmp_name'], $tw))) { 
+
+            $sql2 = mysqli_query($con, "INSERT INTO `marriageregistration`
+                (marriage_id, maleresident_id, femaleresident_id, w_fname, w_mname, w_lname, 
+                 w_birth, w_bplace, w_photo, h_fname, h_mname, h_lname, h_birth, h_bplace, 
+                 h_photo, marriage_date) 
+                VALUES 
+                ('$marriage_id', '$mres', '$fres', '$wfname', '$wmname', '$wlname', 
+                 '$wbirth', '$wbplace', '$wphoto', '$hfname', '$hmname', '$hlname', 
+                 '$hbirth', '$hbplace', '$hphoto', '$mdate')"); 
+
+            if ($sql2) {
+                ?>
+                <div class="alert alert-success" style="width:400px;">
+                    <b>&nbsp;&nbsp;Marriage Registered Successfully</b>
+                </div>
+                <?php 
+            } else {
+                ?>
+                <div class="alert alert-danger" style="width:400px;">
+                    <b>&nbsp;&nbsp;Marriage Registration Failed! <?php echo mysqli_error($con); ?></b>
+                </div>
+                <?php
+            }
+        } else {
+            ?>
+            <div class="alert alert-danger" style="width:400px;">
+                <b>&nbsp;&nbsp;File upload failed!</b>
+            </div>
+            <?php
+        }
+    } else {
+        ?>
+        <div class="alert alert-danger" style="width:400px;">
+            <b>&nbsp;&nbsp;Invalid resident IDs or gender mismatch!</b>
+        </div>
+        <?php
+    }
+    
+    mysqli_close($con);
+}
+?>
 
 <h3>Husband Information</h3><hr>
 <div class="form-group" >
